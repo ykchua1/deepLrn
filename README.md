@@ -13,3 +13,6 @@ usage of the Pytorch library.
 1. venv directory
 2. data directory
 3. ipynb checkpoints
+
+### Who is the target audience for this package?
+1. Myself
