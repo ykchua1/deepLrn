@@ -1,4 +1,4 @@
 **/__pycache__
-*.ipynb
 **/deepLrnEnv
 *.cfg
+**/.ipynb_checkpoints
