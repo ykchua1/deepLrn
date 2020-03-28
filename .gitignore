@@ -2,3 +2,4 @@
 **/deepLrnEnv
 *.cfg
 **/.ipynb_checkpoints
+**/data
