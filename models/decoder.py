@@ -71,7 +71,7 @@ class DeepLab(nn.Module):
         super(DeepLab, self).__init__()
         self.mobilenet = MobileNetV2(output_stride=16)
         # added code by ykchua1 (loading pre-trained params)
-        pretrain_dict = torch.load('./mobilenet_VOC.pth')
+        pretrain_dict = torch.load('./deepLrn/models/mobilenet_VOC.pth')
         model_dict = {}
         state_dict = self.mobilenet.state_dict()
         for k, v in pretrain_dict.items():
