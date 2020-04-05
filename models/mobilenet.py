@@ -4,6 +4,7 @@ import torch.nn as nn
 import math
 import torch.utils.model_zoo as model_zoo
 import pdb
+from torchsummary import summary
 
 def conv_bn(inp, oup, stride, BatchNorm):
     return nn.Sequential(
@@ -142,3 +143,4 @@ if __name__ == "__main__":
     pdb.set_trace()
     print(output.size())
     print(low_level_feat.size())
+    summary(model, (3, 512, 512))
