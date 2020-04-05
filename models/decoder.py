@@ -5,18 +5,17 @@
 # @File    : decoder.py
 # @Software: PyCharm
 
+import sys
 import os
+sys.path.append(os.path.abspath('../..'))
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchsummary import summary
-from mobilenet import MobileNetV2
-from sync_batchnorm.batchnorm import SynchronizedBatchNorm2d
+from deepLrn.models.mobilenet import MobileNetV2
+from deepLrn.models.sync_batchnorm.batchnorm import SynchronizedBatchNorm2d
 
-import sys
-sys.path.append(os.path.abspath('..'))
-
-from encoder import Encoder
+from deepLrn.models.encoder import Encoder
 
 
 class Decoder(nn.Module):
