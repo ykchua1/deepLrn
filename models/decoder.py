@@ -10,8 +10,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchsummary import summary
-from graphs.models.ResNet101 import resnet101
-from graphs.models.sync_batchnorm.batchnorm import SynchronizedBatchNorm2d
+from mobilenet import MobileNetV2
+from sync_batchnorm.batchnorm import SynchronizedBatchNorm2d
 
 import sys
 sys.path.append(os.path.abspath('..'))
@@ -70,7 +70,17 @@ class Decoder(nn.Module):
 class DeepLab(nn.Module):
     def __init__(self, output_stride, class_num, pretrained, bn_momentum=0.1, freeze_bn=False):
         super(DeepLab, self).__init__()
-        self.Resnet101 = resnet101(bn_momentum, pretrained)
+        self.mobilenet = MobileNetV2(output_stride=16)
+        # added code by ykchua1 (loading pre-trained params)
+        pretrain_dict = torch.load('./mobilenet_VOC.pth')
+        model_dict = {}
+        state_dict = model.state_dict()
+        for k, v in pretrain_dict.items():
+            if k in state_dict:
+                model_dict[k] = v
+        state_dict.update(model_dict)
+        model.load_state_dict(state_dict)
+        
         self.encoder = Encoder(bn_momentum, output_stride)
         self.decoder = Decoder(class_num, bn_momentum)
         if freeze_bn:
@@ -78,7 +88,7 @@ class DeepLab(nn.Module):
             print("freeze bacth normalization successfully!")
 
     def forward(self, input):
-        x, low_level_features = self.Resnet101(input)
+        x, low_level_features = self.mobilenet(input)
 
         x = self.encoder(x)
         predict = self.decoder(x, low_level_features)
