@@ -67,7 +67,7 @@ class Decoder(nn.Module):
 
 
 class DeepLab(nn.Module):
-    def __init__(self, output_stride, class_num, pretrained, bn_momentum=0.1, freeze_bn=False):
+    def __init__(self, output_stride, class_num, bn_momentum=0.1, freeze_bn=False):
         super(DeepLab, self).__init__()
         self.mobilenet = MobileNetV2(output_stride=16)
         # added code by ykchua1 (loading pre-trained params)
@@ -101,7 +101,7 @@ class DeepLab(nn.Module):
 
 
 if __name__ =="__main__":
-    model = DeepLab(output_stride=16, class_num=21, pretrained=False, freeze_bn=False)
+    model = DeepLab(output_stride=16, class_num=21, freeze_bn=False)
     model.eval()
     # print(model)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
