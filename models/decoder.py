@@ -16,24 +16,24 @@ from sync_batchnorm.batchnorm import SynchronizedBatchNorm2d
 import sys
 sys.path.append(os.path.abspath('..'))
 
-from graphs.models.encoder import Encoder
+from encoder import Encoder
 
 
 class Decoder(nn.Module):
     def __init__(self, class_num, bn_momentum=0.1):
         super(Decoder, self).__init__()
-        self.conv1 = nn.Conv2d(256, 48, kernel_size=1, bias=False)
-        self.bn1 = SynchronizedBatchNorm2d(48, momentum=bn_momentum)
+        self.conv1 = nn.Conv2d(24, 4, kernel_size=1, bias=False)
+        self.bn1 = SynchronizedBatchNorm2d(4, momentum=bn_momentum)
         self.relu = nn.ReLU()
         # self.conv2 = SeparableConv2d(304, 256, kernel_size=3)
         # self.conv3 = SeparableConv2d(256, 256, kernel_size=3)
-        self.conv2 = nn.Conv2d(304, 256, kernel_size=3, padding=1, bias=False)
-        self.bn2 = SynchronizedBatchNorm2d(256, momentum=bn_momentum)
+        self.conv2 = nn.Conv2d(54, 48, kernel_size=3, padding=1, bias=False)
+        self.bn2 = SynchronizedBatchNorm2d(48, momentum=bn_momentum)
         self.dropout2 = nn.Dropout(0.5)
-        self.conv3 = nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False)
-        self.bn3 = SynchronizedBatchNorm2d(256, momentum=bn_momentum)
+        self.conv3 = nn.Conv2d(48, 48, kernel_size=3, padding=1, bias=False)
+        self.bn3 = SynchronizedBatchNorm2d(48, momentum=bn_momentum)
         self.dropout3 = nn.Dropout(0.1)
-        self.conv4 = nn.Conv2d(256, class_num, kernel_size=1)
+        self.conv4 = nn.Conv2d(48, class_num, kernel_size=1)
 
         self._init_weight()
 
@@ -74,12 +74,12 @@ class DeepLab(nn.Module):
         # added code by ykchua1 (loading pre-trained params)
         pretrain_dict = torch.load('./mobilenet_VOC.pth')
         model_dict = {}
-        state_dict = model.state_dict()
+        state_dict = self.mobilenet.state_dict()
         for k, v in pretrain_dict.items():
             if k in state_dict:
                 model_dict[k] = v
         state_dict.update(model_dict)
-        model.load_state_dict(state_dict)
+        self.mobilenet.load_state_dict(state_dict)
         
         self.encoder = Encoder(bn_momentum, output_stride)
         self.decoder = Decoder(class_num, bn_momentum)
@@ -105,9 +105,9 @@ if __name__ =="__main__":
     model = DeepLab(output_stride=16, class_num=21, pretrained=False, freeze_bn=False)
     model.eval()
     # print(model)
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    # model = model.to(device)
-    # summary(model, (3, 513, 513))
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = model.to(device)
+    summary(model, (3, 512, 512))
     # for m in model.named_modules():
     for m in model.modules():
         if isinstance(m, SynchronizedBatchNorm2d):
