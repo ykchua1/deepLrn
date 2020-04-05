@@ -11,7 +11,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchsummary import summary
 # import torchvision
-from graphs.models.sync_batchnorm.batchnorm import SynchronizedBatchNorm2d
+from sync_batchnorm.batchnorm import SynchronizedBatchNorm2d
 
 import sys
 sys.path.append(os.path.abspath('..'))
@@ -36,19 +36,19 @@ class AsppModule(nn.Module):
         else:
             raise Warning("output_stride must be 8 or 16!")
         # atrous_spatial_pyramid_pooling part
-        self._atrous_convolution1 = _AsppConv(2048, 256, 1, 1, bn_momentum=bn_momentum)
-        self._atrous_convolution2 = _AsppConv(2048, 256, 3, 1, padding=atrous_rates[1], dilation=atrous_rates[1]
+        self._atrous_convolution1 = _AsppConv(320, 40, 1, 1, bn_momentum=bn_momentum)
+        self._atrous_convolution2 = _AsppConv(320, 40, 3, 1, padding=atrous_rates[1], dilation=atrous_rates[1]
                                               , bn_momentum=bn_momentum)
-        self._atrous_convolution3 = _AsppConv(2048, 256, 3, 1, padding=atrous_rates[2], dilation=atrous_rates[2]
+        self._atrous_convolution3 = _AsppConv(320, 40, 3, 1, padding=atrous_rates[2], dilation=atrous_rates[2]
                                               , bn_momentum=bn_momentum)
-        self._atrous_convolution4 = _AsppConv(2048, 256, 3, 1, padding=atrous_rates[3], dilation=atrous_rates[3]
+        self._atrous_convolution4 = _AsppConv(320, 40, 3, 1, padding=atrous_rates[3], dilation=atrous_rates[3]
                                               , bn_momentum=bn_momentum)
 
         #image_pooling part
         self._image_pool = nn.Sequential(
             nn.AdaptiveAvgPool2d((1,1)),
-            nn.Conv2d(2048, 256, kernel_size=1, bias=False),
-            SynchronizedBatchNorm2d(256, momentum=bn_momentum),
+            nn.Conv2d(320, 40, kernel_size=1, bias=False),
+            SynchronizedBatchNorm2d(40, momentum=bn_momentum),
             nn.ReLU()
         )
 
@@ -77,8 +77,8 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
         self.ASPP = AsppModule(bn_momentum=bn_momentum, output_stride=output_stride)
         self.relu = nn.ReLU()
-        self.conv1 = nn.Conv2d(1280, 256, 1, bias=False)
-        self.bn1 = SynchronizedBatchNorm2d(256, momentum=bn_momentum)
+        self.conv1 = nn.Conv2d(200, 50, 1, bias=False)
+        self.bn1 = SynchronizedBatchNorm2d(50, momentum=bn_momentum)
         self.dropout = nn.Dropout(0.5)
 
         self.__init_weight()
@@ -106,4 +106,4 @@ if __name__ =="__main__":
     print(model)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = model.to(device)
-    summary(model, (3, 512, 512))
+    summary(model, (320,512,512))
