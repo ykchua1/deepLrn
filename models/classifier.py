@@ -21,7 +21,7 @@ class Classifier(nn.Module):
         
 class DeepLabClassifier(nn.Module):
     def __init__(self, deeplab, classifier):
-        super(JointModel, self).__init__()
+        super(DeepLabClassifier, self).__init__()
         self.deeplab = deeplab
         self.classifier = classifier
         
