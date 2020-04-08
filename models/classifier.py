@@ -11,7 +11,7 @@ class Classifier(nn.Module):
     def __init__(self, class_num):
         super(Classifier, self).__init__()
         self.conv = nn.Conv2d(48, class_num, kernel_size=1)
-        self.softmax = nn.Softmax(dim=1)
+        self.softmax = nn.LogSoftmax(dim=1)
         
     def forward(self, x):
         x = self.conv(x)
