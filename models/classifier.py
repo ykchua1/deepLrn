@@ -18,3 +18,26 @@ class Classifier(nn.Module):
         x = self.softmax(x)
         
         return x
+        
+class DeepLabClassifier(nn.Module):
+    def __init__(self, deeplab, classifier):
+        super(JointModel, self).__init__()
+        self.deeplab = deeplab
+        self.classifier = classifier
+        
+    def forward(self, x):
+        _, intermed = self.deeplab(x)
+        out = self.classifier(intermed)
+        
+        return out
+
+class DeepLabIntermed(nn.Module):
+    def __init__(self, deeplab):
+        super(DeepLabIntermed, self).__init__()
+        self.deeplab = deeplab
+     
+    def forward(self, x):
+        _, intermed = self.deeplab(x)
+        
+        return intermed
+        
