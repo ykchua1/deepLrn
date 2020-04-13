@@ -15,3 +15,6 @@ This package contains some useful modules for deep learning with Pytorch, along 
 
 ### Who is the target audience for this package?
 1. Myself
+
+### DeeplabV3+ code source:
+[hualin95's Repository](https://github.com/hualin95/Deeplab-v3plus)
